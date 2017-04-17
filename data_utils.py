@@ -21,6 +21,7 @@ from __future__ import print_function
 import os
 import re
 import nltk
+import logging
 
 import tensorflow as tf
 from tensorflow.python.platform import gfile
@@ -69,7 +70,7 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size, normalize
       normalize_digits: Boolean; if true, all digits are replaced by 0s.
     """
     if not gfile.Exists(vocabulary_path):
-        print("Creating vocabulary %s from data %s" % (vocabulary_path, data_path))
+        logging.debug("Creating vocabulary %s from data %s" % (vocabulary_path, data_path))
         vocab = {}
         with gfile.GFile(data_path, mode="rb") as f:
             counter = 0
@@ -79,7 +80,7 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size, normalize
                     print("  processing line %d" % counter)
                 tokens = tokenize(line)
                 for w in tokens:
-                    word = _DIGIT_RE.sub(b"0", w) if normalize_digits else w
+                    word = _DIGIT_RE.sub("0", w) if normalize_digits else w
                     if word in vocab:
                         vocab[word] += 1
                     else:
@@ -154,7 +155,7 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
       normalize_digits: Boolean; if true, all digits are replaced by 0s.
     """
     if not gfile.Exists(target_path):
-        print("Tokenizing data in %s" % data_path)
+        logging.debug("Tokenizing data in %s" % data_path)
         vocab, _ = initialize_vocabulary(vocabulary_path)
         with gfile.GFile(data_path, mode="rb") as data_file:
             with gfile.GFile(target_path, mode="w") as tokens_file:
@@ -162,7 +163,7 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
                 for line in data_file:
                     counter += 1
                     if counter % 100000 == 0:
-                        print("  tokenizing line %d" % counter)
+                        logging.debug("  tokenizing line %d" % counter)
                     token_ids = sentence_to_token_ids(line, vocab,
                                                       tokenizer, normalize_digits)
                     tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
