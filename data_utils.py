@@ -25,10 +25,10 @@ import tensorflow as tf
 from tensorflow.python.platform import gfile
 
 # Special vocabulary symbols - we always put them at the start.
-_PAD = b"_PAD"
-_GO = b"_GO"
-_EOS = b"_EOS"
-_UNK = b"_UNK"
+_PAD = "_PAD"
+_GO = "_GO"
+_EOS = "_EOS"
+_UNK = "_UNK"
 _START_VOCAB = [_PAD, _GO, _EOS, _UNK]
 
 PAD_ID = 0
@@ -37,12 +37,11 @@ EOS_ID = 2
 UNK_ID = 3
 
 # Regular expressions used to tokenize.
-_WORD_SPLIT = re.compile(b'(\. |^|!|\?)([A-Z][^;\.<>@\^&/\[\]]*(\.|!|\?) )')
-_DIGIT_RE = re.compile(br"\d")
+_WORD_SPLIT = re.compile('(\. |^|!|\?)([A-Z][^;\.<>@\^&/\[\]]*(\.|!|\?) )')
+_DIGIT_RE = re.compile(r"\d")
 
 
 def get_train_path(directory):
-    """Download the WMT en-fr training corpus to directory unless it's there."""
     dev_name = "train"
     dev_path = os.path.join(directory, dev_name)
     return dev_path
@@ -80,7 +79,6 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size, normalize
                 counter += 1
                 if counter % 100000 == 0:
                     print("  processing line %d" % counter)
-                line = tf.compat.as_bytes(line)
                 tokens = basic_tokenizer(line)
                 for w in tokens:
                     word = _DIGIT_RE.sub(b"0", w) if normalize_digits else w
@@ -115,7 +113,7 @@ def initialize_vocabulary(vocabulary_path):
         rev_vocab = []
         with gfile.GFile(vocabulary_path, mode="rb") as f:
             rev_vocab.extend(f.readlines())
-        rev_vocab = [tf.compat.as_bytes(line.strip()) for line in rev_vocab]
+        rev_vocab = [line.strip() for line in rev_vocab]
         vocab = dict([(x, y) for (y, x) in enumerate(rev_vocab)])
         return vocab, rev_vocab
     else:
@@ -140,7 +138,7 @@ def sentence_to_token_ids(sentence, vocabulary, normalize_digits=True):
     if not normalize_digits:
         return [vocabulary.get(w, UNK_ID) for w in words]
     # Normalize digits by 0 before looking words up in the vocabulary.
-    return [vocabulary.get(_DIGIT_RE.sub(b"0", w), UNK_ID) for w in words]
+    return [vocabulary.get(_DIGIT_RE.sub("0", w), UNK_ID) for w in words]
 
 
 def data_to_token_ids(data_path, target_path, vocabulary_path,
@@ -167,7 +165,7 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
                     counter += 1
                     if counter % 100000 == 0:
                         print("  tokenizing line %d" % counter)
-                    token_ids = sentence_to_token_ids(tf.compat.as_bytes(line), vocab,
+                    token_ids = sentence_to_token_ids(line, vocab,
                                                       tokenizer, normalize_digits)
                     tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
 
