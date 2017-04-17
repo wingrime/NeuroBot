@@ -48,7 +48,7 @@ def get_train_path(directory):
     return dev_path
 
 
-def basic_tokenizer(sentence):
+def tokenize(sentence):
     """Very basic tokenizer: split the sentence into a list of tokens."""
     return nltk.word_tokenize(sentence)
 
@@ -77,7 +77,7 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size, normalize
                 counter += 1
                 if counter % 100000 == 0:
                     print("  processing line %d" % counter)
-                tokens = basic_tokenizer(line)
+                tokens = tokenize(line)
                 for w in tokens:
                     word = _DIGIT_RE.sub(b"0", w) if normalize_digits else w
                     if word in vocab:
@@ -131,7 +131,7 @@ def sentence_to_token_ids(sentence, vocabulary, normalize_digits=True):
     Returns:
       a list of integers, the token-ids for the sentence.
     """
-    words = basic_tokenizer(sentence)
+    words = tokenize(sentence)
 
     if not normalize_digits:
         return [vocabulary.get(w, UNK_ID) for w in words]
@@ -194,7 +194,7 @@ def prepare_wmt_data(data_dir, en_vocabulary_size, fr_vocabulary_size, tokenizer
     from_dev_path = dev_path + ".en"
     to_dev_path = dev_path + ".fr"
     return prepare_data(data_dir, from_train_path, to_train_path, from_dev_path, to_dev_path, en_vocabulary_size,
-                        fr_vocabulary_size, tokenizer)
+                        fr_vocabulary_size)
 
 
 def prepare_data(data_dir, from_train_path, to_train_path, from_dev_path, to_dev_path, from_vocabulary_size,
