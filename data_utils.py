@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import os
 import re
+import nltk
 
 import tensorflow as tf
 from tensorflow.python.platform import gfile
@@ -49,10 +50,7 @@ def get_train_path(directory):
 
 def basic_tokenizer(sentence):
     """Very basic tokenizer: split the sentence into a list of tokens."""
-    words = []
-    for space_separated_fragment in sentence.strip().split():
-        words.extend(_WORD_SPLIT.split(space_separated_fragment))
-    return [w for w in words if w]
+    return nltk.word_tokenize(sentence)
 
 
 def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size, normalize_digits=True):
