@@ -144,13 +144,12 @@ def create_model(session, forward_only):
         logging.debug("Reading model parameters from %s" % ckpt.model_checkpoint_path)
         model.saver.restore(session, ckpt.model_checkpoint_path)
     else:
-        print("Created model with fresh parameters.")
+        logging.debug("Created model with fresh parameters.")
         session.run(tf.global_variables_initializer())
     return model
 
 
 def train():
-    """Train a en->fr translation model using WMT data."""
     from_train = None
     to_train = None
     from_dev = None
@@ -243,7 +242,7 @@ def train():
                                                  target_weights, bucket_id, True)
                     eval_ppx = math.exp(float(eval_loss)) if eval_loss < 300 else float(
                         "inf")
-                    print("  eval: bucket %d perplexity %.2f" % (bucket_id, eval_ppx))
+                    logging.debug("  eval: bucket %d perplexity %.2f" % (bucket_id, eval_ppx))
                 sys.stdout.flush()
 
 
@@ -352,7 +351,7 @@ def serve():
 def self_test():
     """Test the translation model."""
     with tf.Session() as sess:
-        print("Self-test for neural translation model.")
+        logging.debug("Self-test for neural translation model.")
         # Create model with vocabularies of 10, 2 small buckets, 2 layers of 32.
         model = seq2seq_model.Seq2SeqModel(10, 10, [(3, 3), (6, 6)], 32, 2,
                                            5.0, 32, 0.3, 0.99, num_samples=8)

@@ -18,12 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import logging
 import os
 import re
-import nltk
-import logging
 
-import tensorflow as tf
+import nltk
 from tensorflow.python.platform import gfile
 
 # Special vocabulary symbols - we always put them at the start.
@@ -90,7 +89,7 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size, normalize
                 vocab_list = vocab_list[:max_vocabulary_size]
             with gfile.GFile(vocabulary_path, mode="wb") as vocab_file:
                 for w in vocab_list:
-                    vocab_file.write(w + b"\n")
+                    vocab_file.write(w + "\n")
 
 
 def initialize_vocabulary(vocabulary_path):
@@ -140,8 +139,7 @@ def sentence_to_token_ids(sentence, vocabulary, normalize_digits=True):
     return [vocabulary.get(_DIGIT_RE.sub("0", w), UNK_ID) for w in words]
 
 
-def data_to_token_ids(data_path, target_path, vocabulary_path,
-                      tokenizer=None, normalize_digits=True):
+def data_to_token_ids(data_path, target_path, vocabulary_path, normalize_digits=True):
     """Tokenize data file and turn into token-ids using given vocabulary file.
     This function loads data line-by-line from data_path, calls the above
     sentence_to_token_ids, and saves the result to target_path. See comment
@@ -164,12 +162,11 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
                     counter += 1
                     if counter % 100000 == 0:
                         logging.debug("  tokenizing line %d" % counter)
-                    token_ids = sentence_to_token_ids(line, vocab,
-                                                      tokenizer, normalize_digits)
+                    token_ids = sentence_to_token_ids(line, vocab, normalize_digits)
                     tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
 
 
-def prepare_wmt_data(data_dir, en_vocabulary_size, fr_vocabulary_size, tokenizer=None):
+def prepare_wmt_data(data_dir, en_vocabulary_size, fr_vocabulary_size):
     """Get WMT data into data_dir, create vocabularies and tokenize data.
     Args:
       data_dir: directory in which the data sets will be stored.
