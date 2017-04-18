@@ -1,4 +1,4 @@
-from sklearn.model_selection import train_test_split
+# -*- coding: utf-8 -*-
 
 FNAME = "movie_lines.txt"
 LINE_SEP = " +++$+++ "
@@ -67,11 +67,13 @@ def parse_line(dialogs):
 
 def write_dialogs(dialogs, file_prefix):
     size = len(dialogs[0])
-    left_f = open(file_prefix + '.a'.format(size), 'w')
-    right_f = open(file_prefix + '.b'.format(size), 'w')
+    left_f = open(file_prefix + '.en'.format(size), 'w')
+    right_f = open(file_prefix + '.fr'.format(size), 'w')
     for i in range(0, len(dialogs[0])):
-        left_f.write(dialogs[0][i])
-        right_f.write(dialogs[1][i])
+        str1 = dialogs[0][i]
+        str2 = dialogs[1][i]
+        left_f.write(str1)
+        right_f.write(str2)
     left_f.close()
     right_f.close()
 
@@ -87,6 +89,7 @@ if __name__ == "__main__":
         for i in range(0, len(result[0])):
             print("FROM {}\n TO {}".format(result[0][i], result[1][i]))
 
-    train_a, test_a, train_b, test_b = train_test_split(result[0], result[1], test_size=0.2)
-    write_dialogs([train_a, train_b], "train")
-    write_dialogs([test_a, test_b], "test")
+    # train_a, test_a, train_b, test_b = train_test_split(result[0], result[1], test_size=0.2)
+    # write_dialogs([train_a, train_b], "train")
+    # write_dialogs([test_a, test_b], "test")
+    write_dialogs([result[0], result[1]], "train")
